@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vídeo</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="AbreVideo()">Abrir Vídeo</button>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <video id="myVideo" controls>
+                <source src="gamefx.mp4" type="video/mp4">
+                Seu navegador não suporta o elemento <code>video</code>.
+            </video>
+            <div id="contador">Tempo: 0.0s</div>
+            <button onclick="AvancaVideo()">Avançar</button>
+            <button onclick="VoltaVideo()">Voltar</button>
+            <button onclick="PausaVideo()">Pausa</button>
+            <button onclick="FechaVideo()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        const vid = document.getElementById('myVideo');
+        const contador = document.getElementById('contador');
+        let reverse = false;
+        let contadorInterval;
+        let timeElapsed = 0.0;
+        const updateInterval = 100; // 100 milissegundos (0,1 segundo)
+
+        function startVaiEVolta() {
+            clearInterval(contadorInterval); // Limpa qualquer intervalo anterior
+            timeElapsed = 0.0;
+            reverse = false;
+
+            contadorInterval = setInterval(() => {
+                if (!reverse) {
+                    timeElapsed += 0.1;
+                    vid.currentTime += 0.1; // Avança o vídeo em 0.1 segundo
+                    contador.innerHTML = `Tempo: ${timeElapsed.toFixed(1)}s`;
+                    if (timeElapsed >= 15) {
+                        reverse = true;
+                    }
+                } else {
+                    timeElapsed -= 0.1;
+                    vid.currentTime -= 0.1; // Retrocede o vídeo em 0.1 segundo
+                    contador.innerHTML = `Tempo: ${timeElapsed.toFixed(1)}s`;
+                    if (timeElapsed <= 0) {
+                        reverse = false;
+                    }
+                }
+            }, updateInterval); // Atualiza a cada 100 milissegundos
+        }
+
+        function AbreVideo() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'block';
+            startVaiEVolta();
+        }
+
+        function FechaVideo() {
+            clearInterval(contadorInterval);
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+
+        function AvancaVideo() {
+            vid.currentTime += 10; // Avança 10 segundos (ajuste conforme necessário)
+        }
+
+        function VoltaVideo() {
+            vid.currentTime -= 10; // Volta 10 segundos (ajuste conforme necessário)
+        }
+
+        function PausaVideo() {
+            if (vid.paused) {
+                startVaiEVolta();
+            } else {
+                vid.pause();
+                clearInterval(contadorInterval);
+            }
+        }
+    </script>
+</body>
+</html>
